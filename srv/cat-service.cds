@@ -10,4 +10,5 @@ service CatalogService {
 service BusinessService {
     entity CustomersRemote as projection on bookshop.CustomersRemote;
 	entity Customers as projection on bookshop.Customers;
+	function fetchCustomers() returns Integer; // number of customers fetched
 }

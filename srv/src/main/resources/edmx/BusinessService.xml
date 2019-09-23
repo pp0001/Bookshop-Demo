@@ -5,6 +5,7 @@
       <EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true">
         <EntitySet Name="Customers" EntityType="BusinessService.Customers"/>
         <EntitySet Name="CustomersRemote" EntityType="BusinessService.CustomersRemote"/>
+        <FunctionImport Name="fetchCustomers" ReturnType="Edm.Int32" m:HttpMethod="GET"/>
       </EntityContainer>
       <EntityType Name="Customers">
         <Key>

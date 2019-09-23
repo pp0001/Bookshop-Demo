@@ -1,6 +1,6 @@
 ID: bookshop
 _schema-version: "2.1"
-version: 0.0.1
+version: 0.0.2
 modules:
   - name: bookshop-db
     type: hdb
@@ -20,13 +20,12 @@ modules:
         properties:
           url: ${default-url}
     requires:
+      - name: sales-broker-1
       - name: bookshop-hdi-container
         properties:
           JBP_CONFIG_RESOURCE_CONFIGURATION: '[tomcat/webapps/ROOT/META-INF/context.xml:
             {"service_name_for_DefaultDB" : "~{hdi-container-name}"}]'
-      #- name: bookshop-uaa
-
-
+      #- name: uaa_bookshop
   - name: app
     type: html5
     path: app
@@ -44,8 +43,63 @@ modules:
           name: srv_api
           url: ~{url}
      - name: uaa_bookshop
+  - name: bookshop-broker
+    type: nodejs
+    path: servicebroker
+    parameters:
+      disk-quota: 256M
+      memory: 256M
+      health-check-timeout: 180
+      create-service-broker: true # true | false. Default is false. Specifies whether a service broker should be registered for this module.
+      service-broker-name: test-bookshop-broker-${space} # Default is ${app-name}. Specifies the name of service broker to register.
+      service-broker-user: ~{broker-credentials/user} # Specifies the service broker user value. Mandatory parameter (only if 'create-service-broker' is true).
+      service-broker-password: ~{broker-credentials/password} # Specifies the service broker password value. Mandatory parameter (only if 'create-service-broker' is true).
+      service-broker-url: ${default-url}/broker # As metadata extensions is using broker middleware the broker url is not the default url.   Mandatory parameter (only if 'create-service-broker' is true).
+      service-broker-space-scoped: true # true | false. Default is false. Specifies whether a service broker should be registered as local for the current space.
+    requires:
+      #- name: fc-apprepo-dt
+      - name: srv_api
+      - name: broker-credentials
+      - name: broker-uaa
+    build-parameters:
+      builder: npm
+      npm-opts:
+        no-optional: null
+    properties:
+      SBF_CATALOG_SUFFIX: '${space}'
+      SBF_ENABLE_AUDITLOG: false
+      SBF_BROKER_CREDENTIALS: "{ \"~{broker-credentials/user}\": \"~{broker-credentials/password}\" }"
+      SBF_SERVICE_CONFIG: |
+        {
+           "test-bookshop": {
+              "extend_catalog": {
+                 "metadata": {
+                    "sapservice": {
+                      "odataprovider": "cap",
+                      "odataversion": "v2",
+                      "providesui": "true"
+                    }
+                 }
+              },
+              "extend_credentials": {
+                "per_plan": {
+                  "standard": {
+                    "endpoints": { 
+                      "bookshop": "~{srv_api/url}"
+                    },
+                    "saasregistryappname": "test-bookshop-service-${space}"
+                  }
+                }
+              }
+           }
+        }
 
 resources:
+  - name: broker-credentials
+    properties:
+      user: ${generated-user}
+      password: ${generated-password}
+      
   - name: bookshop-hdi-container
     type: com.sap.xs.hdi-container
     properties:
@@ -57,4 +111,31 @@ resources:
        service-plan: application
        service: xsuaa
     type: org.cloudfoundry.managed-service
+    
+  - name: broker-uaa
+    type: com.sap.xs.uaa
+    parameters:
+      service-plan: broker
+      config:
+        xsappname: bookshop-${space}
+        tenant-mode: shared
+        scopes:
+          - name: $XSAPPNAME.test
+            description: test for bookshop
+          - name: "$XSAPPNAME.Onboarding"
+            description: Onboarding Callback Access
+            grant-as-authority-to-apps:
+            - "$XSAPPNAME(application,sap-provisioning,tenant-onboarding)"
+        role-templates:
+          - name: bookshop_test
+            description: test for bookshop
+            scope-references:
+              - $XSAPPNAME.test
+
+  - name: sales-broker-1
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: test-sales-broker
+      service-plan: standard
+
 

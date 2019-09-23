@@ -972,6 +972,12 @@
       "@cds.persistence.skip": false,
       "@cds.persistence.name": "BUSINESSSERVICE_CUSTOMERS"
     },
+    "BusinessService.fetchCustomers": {
+      "kind": "function",
+      "returns": {
+        "type": "cds.Integer"
+      }
+    },
     "Language": {
       "kind": "type",
       "type": "cds.Association",
