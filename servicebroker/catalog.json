@@ -1,8 +1,8 @@
 {
     "services": [
       {
-        "name": "test-bookshop",
-        "description": "Test Bookshop",
+        "name": "test-bookshop-new",
+        "description": "Test Bookshop - new",
         "tags": [
           "Bookshop"
         ],
@@ -13,16 +13,16 @@
             "saasregistryenabled": true
           }
         },
-        "longDescription": "Test Bookshop",
+        "longDescription": "Test Bookshop - new",
         "plan_updateable": true,
         "plans": [
           {
             "name": "standard",
             "description": "Standard Plan",
-            "id": "b26114d3-7e64-41d5-81c0-c13b8d40ee40"
+            "id": "df14ad37-db8e-47ca-b794-79b87458f072"
           }
         ],
-        "id": "a1d32937-8ad1-43df-9f3e-23eddac1f917"
+        "id": "f15873bf-0cb1-4fea-8eb9-62e968dbdff5"
       }
     ]
   }

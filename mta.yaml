@@ -20,12 +20,11 @@ modules:
         properties:
           url: ${default-url}
     requires:
-      - name: sales-broker-1
       - name: bookshop-hdi-container
         properties:
           JBP_CONFIG_RESOURCE_CONFIGURATION: '[tomcat/webapps/ROOT/META-INF/context.xml:
             {"service_name_for_DefaultDB" : "~{hdi-container-name}"}]'
-      #- name: uaa_bookshop
+      - name: uaa_bookshop
   - name: app
     type: html5
     path: app
@@ -51,7 +50,7 @@ modules:
       memory: 256M
       health-check-timeout: 180
       create-service-broker: true # true | false. Default is false. Specifies whether a service broker should be registered for this module.
-      service-broker-name: test-bookshop-broker-${space} # Default is ${app-name}. Specifies the name of service broker to register.
+      service-broker-name: test-bk-broker-${space} # Default is ${app-name}. Specifies the name of service broker to register.
       service-broker-user: ~{broker-credentials/user} # Specifies the service broker user value. Mandatory parameter (only if 'create-service-broker' is true).
       service-broker-password: ~{broker-credentials/password} # Specifies the service broker password value. Mandatory parameter (only if 'create-service-broker' is true).
       service-broker-url: ${default-url}/broker # As metadata extensions is using broker middleware the broker url is not the default url.   Mandatory parameter (only if 'create-service-broker' is true).
@@ -71,7 +70,7 @@ modules:
       SBF_BROKER_CREDENTIALS: "{ \"~{broker-credentials/user}\": \"~{broker-credentials/password}\" }"
       SBF_SERVICE_CONFIG: |
         {
-           "test-bookshop": {
+           "test-bookshop-new": {
               "extend_catalog": {
                  "metadata": {
                     "sapservice": {
@@ -87,7 +86,7 @@ modules:
                     "endpoints": { 
                       "bookshop": "~{srv_api/url}"
                     },
-                    "saasregistryappname": "test-bookshop-service-${space}"
+                    "saasregistryappname": "test-bk-service-${space}"
                   }
                 }
               }
@@ -131,11 +130,5 @@ resources:
             description: test for bookshop
             scope-references:
               - $XSAPPNAME.test
-
-  - name: sales-broker-1
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: test-sales-broker
-      service-plan: standard
 
 

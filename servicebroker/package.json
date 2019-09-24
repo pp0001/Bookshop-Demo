@@ -1,7 +1,7 @@
 {
   "name": "servicebroker",
   "version": "1.0.0",
-  "description": "Test - BookShop Service Broker",
+  "description": "Test - BK Service Broker",
   "main": "index.js",
   "engines": {
     "node": "^8"
